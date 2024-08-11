@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "caesar cipher",
-  description: "simple caesar cipher implementation for basic encryption and decryption.",
+  description: "simple caesar cipher implementation for basic encryption and decryption.  ",
 };
 
 export default function RootLayout({
