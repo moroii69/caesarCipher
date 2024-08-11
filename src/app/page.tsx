@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 // Caesar Cipher function
-const caesarCipher = (text, shift) => {
+const caesarCipher = (text: string, shift: number): string => {
     return text.split('').map(char => {
         if (char.match(/[a-z]/i)) {
             const code = char.charCodeAt(0);
@@ -57,12 +57,12 @@ function CaesarCipherResultDialog({ isOpen, onClose, result }: { isOpen: boolean
 
 // Main Component
 export default function Home() {
-    const [text, setText] = useState("");
-    const [shift, setShift] = useState<number | "">(1);
+    const [text, setText] = useState<string>("");
+    const [shift, setShift] = useState<number>(1); // Initialize with a number
     const [error, setError] = useState<string | null>(null);
     const [textError, setTextError] = useState<string | null>(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [result, setResult] = useState("");
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const [result, setResult] = useState<string>("");
 
     const handleTextInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
