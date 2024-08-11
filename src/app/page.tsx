@@ -1,113 +1,211 @@
-import Image from "next/image";
+"use client";
 
+import * as React from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+// Caesar Cipher function
+const caesarCipher = (text, shift) => {
+    return text.split('').map(char => {
+        if (char.match(/[a-z]/i)) {
+            const code = char.charCodeAt(0);
+            const shiftBase = char === char.toUpperCase() ? 65 : 97;
+            return String.fromCharCode(((code - shiftBase + shift) % 26 + 26) % 26 + shiftBase);
+        }
+        return char;
+    }).join('');
+};
+
+// Caesar Cipher Result Dialog
+function CaesarCipherResultDialog({ isOpen, onClose, result }: { isOpen: boolean, onClose: () => void, result: string }) {
+    const copyToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(result);
+            alert('Copied to clipboard!');
+        } catch (error) {
+            console.error("Copy failed: ", error);
+        }
+    };
+
+    return (
+        <AlertDialog open={isOpen} onOpenChange={onClose}>
+            <AlertDialogContent className="bg-[#1c1c1c] text-white">
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Result</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        {result}
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel onClick={onClose} className="bg-[#2c2c2c] text-white hover:bg-[#444]">Close</AlertDialogCancel>
+                    <AlertDialogAction onClick={copyToClipboard} className="bg-[#2c2c2c] text-white hover:bg-[#444]">Copy Result</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+}
+
+// Main Component
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    const [text, setText] = useState("");
+    const [shift, setShift] = useState<number | "">(1);
+    const [error, setError] = useState<string | null>(null);
+    const [textError, setTextError] = useState<string | null>(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [result, setResult] = useState("");
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+    const handleTextInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const value = e.target.value;
+        if (value.length > 2000) {
+            setTextError("Text cannot exceed 2000 characters.");
+        } else {
+            setTextError(null);
+            setText(value);
+        }
+    };
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+    const handleShiftChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = Number(e.target.value);
+        if (value < 1 || value > 25) {
+            setError("Shift value must be between 1 and 25.");
+        } else {
+            setError(null);
+            setShift(value);
+        }
+    };
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+    const handleSubmit = () => {
+        if (shift < 1 || shift > 25) {
+            setError("Shift value must be between 1 and 25.");
+        } else if (text.length > 2000) {
+            setTextError("Text cannot exceed 2000 characters.");
+        } else {
+            setError(null);
+            setTextError(null);
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+            // Encrypt the text using Caesar Cipher function
+            try {
+                const encryptedText = caesarCipher(text, shift);
+                setResult(encryptedText);
+                setDialogOpen(true);
+            } catch (error) {
+                console.error("Error:", error);
+                setError("An error occurred during encryption.");
+            }
+        }
+    };
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    return (
+        <main className="flex min-h-screen flex-col items-center justify-center" style={{ backgroundColor: '#111111' }}>
+            <h2 className="text-3xl font-semibold tracking-tight" style={{ color: '#f0f0f1' }}>Caesar Cipher</h2>
+            <div className="mt-8" style={{ width: '60%', maxWidth: '600px' }}>
+                <div className="mb-6 text-white">
+                    <label htmlFor="text-input" className="block text-sm font-medium mb-2">
+                        enter text to be encrypted
+                    </label>
+                    <textarea
+                        id="text-input"
+                        placeholder="enter text"
+                        className="w-full rounded-md border border-[#24242c] bg-[#24242c] px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none overflow-hidden"
+                        onChange={handleTextInput}
+                        value={text}
+                    />
+                    <p className="mt-2 text-muted-foreground text-xs">
+                        {text.length} / 2000 characters
+                    </p>
+                    {textError && (
+                        <p className="mt-2 text-red-500 text-sm">
+                            {textError}
+                        </p>
+                    )}
+                </div>
+                <div className="mt-6 text-white">
+                    <label htmlFor="number-input" className="block text-sm font-medium mb-2">
+                        enter the shift value
+                    </label>
+                    <input
+                        id="number-input"
+                        type="number"
+                        placeholder="enter number"
+                        className="w-full h-10 rounded-md border border-[#24242c] bg-[#24242c] px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        onChange={handleShiftChange}
+                        value={shift}
+                    />
+                    {error && (
+                        <p className="mt-2 text-red-500 text-sm">
+                            {error}
+                        </p>
+                    )}
+                    <div className="mt-4 flex justify-center">
+                        <Button variant="outline" onClick={handleSubmit}>
+                            submit
+                        </Button>
+                    </div>
+                </div>
+            </div>
+            <footer className="fixed bottom-0 left-0 w-full bg-[#111111] text-white py-4">
+                <div className="flex justify-center items-center gap-4">
+                    <a
+                        href="https://en.wikipedia.org/wiki/Caesar_cipher"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground"
+                    >
+                        click here to learn more about the <span className="underline opacity-50">caesar cipher</span> method
+                    </a>
+                    <span className="text-sm text-muted-foreground">|</span>
+                    <a
+                        href="https://www.github.com/moroii69"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground"
+                    >
+                        by <span className="underline opacity-50">ufraaan</span>
+                    </a>
+                </div>
+            </footer>
+
+            <CaesarCipherResultDialog isOpen={dialogOpen} onClose={() => setDialogOpen(false)} result={result} />
+
+            <div className="desktop-notice">
+                best viewed on desktop!
+            </div>
+
+            <style jsx>
+                {`
+					.desktop-notice {
+						position: fixed;
+						top: 0;
+						right: 0;
+						background-color: #111111;
+						color: #64748b;
+						padding: 0.5rem 1rem;
+						border-bottom-left-radius: 8px;
+						border-top-left-radius: 8px;
+						font-size: 0.875rem;
+						z-index: 1000; /* Ensure it is above other content */
+						text-transform: lowercase;
+					}
+
+					.underline {
+						text-decoration: underline;
+					}
+
+					.opacity-50 {
+						opacity: 0.5;
+					}
+                `}
+            </style>
+        </main>
+    );
 }
