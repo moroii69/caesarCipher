@@ -161,10 +161,10 @@ export default function Home() {
                     )}
                     <div className="mt-4 flex justify-center gap-4">
                         <Button variant="outline" onClick={() => { setIsDecrypting(false); handleSubmit(); }}>
-                            Encrypt
+                            encrypt
                         </Button>
                         <Button variant="outline" onClick={() => { setIsDecrypting(true); handleSubmit(); }}>
-                            Decrypt
+                            decrypt
                         </Button>
                     </div>
                 </div>
