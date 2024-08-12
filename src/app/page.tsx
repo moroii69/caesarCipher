@@ -14,7 +14,6 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// Caesar Cipher function
 const caesarCipher = (text: string, shift: number): string => {
     return text.split('').map(char => {
         if (char.match(/[a-z]/i)) {
@@ -26,7 +25,6 @@ const caesarCipher = (text: string, shift: number): string => {
     }).join('');
 };
 
-// Caesar Cipher Result Dialog
 function CaesarCipherResultDialog({ isOpen, onClose, result }: { isOpen: boolean, onClose: () => void, result: string }) {
     const copyToClipboard = async () => {
         try {
@@ -55,14 +53,15 @@ function CaesarCipherResultDialog({ isOpen, onClose, result }: { isOpen: boolean
     );
 }
 
-// Main Component
 export default function Home() {
     const [text, setText] = useState<string>("");
-    const [shift, setShift] = useState<number>(1); // Initialize with a number
+    const [shift, setShift] = useState<number>(1);
     const [error, setError] = useState<string | null>(null);
     const [textError, setTextError] = useState<string | null>(null);
+    const [inputError, setInputError] = useState<string | null>(null); // New state for input error
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [result, setResult] = useState<string>("");
+    const [isDecrypting, setIsDecrypting] = useState<boolean>(false);
 
     const handleTextInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
@@ -87,31 +86,40 @@ export default function Home() {
     const handleSubmit = () => {
         if (shift < 1 || shift > 25) {
             setError("Shift value must be between 1 and 25.");
+        } else if (text.length === 0) {
+            setInputError("Text cannot be empty.");
+            setError(null);
+            setTextError(null);
         } else if (text.length > 2000) {
             setTextError("Text cannot exceed 2000 characters.");
+            setError(null);
+            setInputError(null);
         } else {
             setError(null);
             setTextError(null);
+            setInputError(null);
 
-            // Encrypt the text using Caesar Cipher function
             try {
-                const encryptedText = caesarCipher(text, shift);
-                setResult(encryptedText);
+                const operation = isDecrypting ? -shift : shift;
+                const processedText = caesarCipher(text, operation);
+                setResult(processedText);
                 setDialogOpen(true);
             } catch (error) {
                 console.error("Error:", error);
-                setError("An error occurred during encryption.");
+                setError("An error occurred during processing.");
             }
         }
     };
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center" style={{ backgroundColor: '#111111' }}>
-            <h2 className="text-3xl font-semibold tracking-tight" style={{ color: '#f0f0f1' }}>Caesar Cipher</h2>
+            <h2 className="text-3xl font-semibold tracking-tight" style={{ color: '#f0f0f1' }}>
+                caesar cipher.
+            </h2>
             <div className="mt-8" style={{ width: '60%', maxWidth: '600px' }}>
                 <div className="mb-6 text-white">
                     <label htmlFor="text-input" className="block text-sm font-medium mb-2">
-                        enter text to be encrypted
+                        enter text to be encrypted / decrypted
                     </label>
                     <textarea
                         id="text-input"
@@ -126,6 +134,11 @@ export default function Home() {
                     {textError && (
                         <p className="mt-2 text-red-500 text-sm">
                             {textError}
+                        </p>
+                    )}
+                    {inputError && (
+                        <p className="mt-2 text-red-500 text-sm">
+                            {inputError}
                         </p>
                     )}
                 </div>
@@ -146,9 +159,12 @@ export default function Home() {
                             {error}
                         </p>
                     )}
-                    <div className="mt-4 flex justify-center">
-                        <Button variant="outline" onClick={handleSubmit}>
-                            submit
+                    <div className="mt-4 flex justify-center gap-4">
+                        <Button variant="outline" onClick={() => { setIsDecrypting(false); handleSubmit(); }}>
+                            Encrypt
+                        </Button>
+                        <Button variant="outline" onClick={() => { setIsDecrypting(true); handleSubmit(); }}>
+                            Decrypt
                         </Button>
                     </div>
                 </div>

@@ -68,22 +68,20 @@
   }
 }
 
-/* Ensure this is included in your global CSS or in a <style> block */
-
 textarea {
-  overflow: auto; /* Enable scrolling */
-  resize: none;   /* Disable manual resizing */
+  overflow: auto;
+  resize: none;
   max-width: 100%;
-  max-height: 300px; /* Adjust as needed */
+  max-height: 300px;
 }
 
 textarea::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for WebKit browsers */
+  display: none;
 }
 
 textarea {
-  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @media (max-width: 768px) {
@@ -95,40 +93,34 @@ textarea {
 @media (max-width: 480px) {
   textarea {
     max-width: 100%;
-    max-height: 200px; /* Adjust as needed */
+    max-height: 200px;
   }
 }
 
-/* Add this to your CSS file */
-
-/* Base button styling */
 button {
-  background-color: #1c1c1c; /* Background color of the button */
-  color: #000000; /* Text color of the button */
-  border: 1px solid #444; /* Border color */
-  border-radius: 4px; /* Rounded corners */
-  padding: 0.5rem 1.5rem; /* Padding inside the button */
-  font-size: 1rem; /* Font size */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition effects */
+  background-color: #1c1c1c;
+  color: #000000;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Hover effect */
 button:hover {
-  background-color: #333; /* Slightly lighter background on hover */
-  color: #ffffff; /* Text color on hover */
-  border-color: #666; /* Border color on hover */
+  background-color: #333;
+  color: #ffffff;
+  border-color: #666;
 }
 
-/* Active effect (click) */
 button:active {
-  background-color: #444; /* Darker background when button is clicked */
-  color: #ffffff; /* Text color when button is clicked */
-  border-color: #777; /* Border color when button is clicked */
+  background-color: #444;
+  color: #ffffff;
+  border-color: #777;
 }
 
-/* Focus effect (optional) */
 button:focus {
-  outline: none; /* Remove default focus outline */
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); /* Add a subtle focus ring */
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
