@@ -181,12 +181,12 @@ export default function Home() {
                     </a>
                     <span className="text-sm text-muted-foreground">|</span>
                     <a
-                        href="https://www.github.com/moroii69"
+                        href="https://github.com/faheemahm"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-muted-foreground"
                     >
-                        by <span className="underline opacity-50">ufraaan</span>
+                        by <span className="underline opacity-50">faheem ahmed</span>
                     </a>
                 </div>
             </footer>
